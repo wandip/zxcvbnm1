@@ -2,20 +2,14 @@ package com.dipak.calendardemo;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -33,13 +27,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.BatchUpdateException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -317,9 +308,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Date",maxDate.toString());
 
 
-
-
-
                 if((dateClicked.after(minDate) || dateClicked.equals(minDate)) && (dateClicked.before(maxDate)|| dateClicked.equals(maxDate)))
                 {
                     LunchButton.setClickable(true);
@@ -362,8 +350,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Upload.class);
-                intent.putExtra("R",String.valueOf(num));
-
                 startActivity(intent);
             }
         });
