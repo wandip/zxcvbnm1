@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
     String server_response;
     Event lunch_event,dinner_event;
     JSONObject jObj = null;
+    String dayOfTheWeek,mydate;
+
     String json = "";
     long oneday = 24*60*60*1000;
     long fpfhour = 5*60*60*1000+30*60*1000;
 
+    String getmessid;
     private ProgressDialog pDialog;
-    Button LunchButton,DinnerButton;
+    Button LunchButton,DinnerButton,OfferButton;
     boolean status[][];
 
 
@@ -53,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        /*Bundle bundle = getIntent().getExtras();
+        getmessid = bundle.getString("messid");*/
+
+        getmessid = "Mess5";
 
         final GetServerDate gsd = new GetServerDate();
         gsd.execute("http://wanidipak56.000webhostapp.com/try.php");
@@ -118,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 //constants
                 URL url = new URL("https://wanidipak56.000webhostapp.com/receivestatus.php");
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("messid", "Mess1");
+                jsonObject.put("messid", getmessid);
 
                 String message = jsonObject.toString();
 
@@ -201,6 +211,8 @@ public class MainActivity extends AppCompatActivity {
 
         LunchButton = (Button) findViewById(R.id.button2);
         DinnerButton = (Button) findViewById(R.id.button);
+        OfferButton = (Button) findViewById(R.id.button4);
+
         Calendar = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
         LunchButton.setBackgroundColor(Color.LTGRAY);
         DinnerButton.setBackgroundColor(Color.LTGRAY);
@@ -222,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         final Date minDate = new Date((newDate.getTime())-((newDate.getTime())%(oneday)) -fpfhour);
         final Date maxDate = new Date((newDate.getTime()+6*oneday)-((newDate.getTime()+6*oneday)%(oneday))-fpfhour);
 
-        int dayName = minDate.getDay();
+        final int dayName = minDate.getDay();
 
         Log.e("minDate Day",String.valueOf(dayName));
 
@@ -307,6 +319,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Date",minDate.toString());
                 Log.e("Date",maxDate.toString());
 
+                SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
+
+                dayOfTheWeek = sdf.format(dateClicked);
+
+                DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
+                mydate = df.format(dateClicked);
 
                 if((dateClicked.after(minDate) || dateClicked.equals(minDate)) && (dateClicked.before(maxDate)|| dateClicked.equals(maxDate)))
                 {
@@ -334,6 +353,11 @@ public class MainActivity extends AppCompatActivity {
                     DinnerButton.setClickable(false);
                     LunchButton.setBackgroundColor(Color.LTGRAY);
                     DinnerButton.setBackgroundColor(Color.LTGRAY);
+
+                    lview.setText("Sorry not available");
+                    dview.setText("Sorry not available");
+
+
                 }
             }
 
@@ -350,6 +374,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Upload.class);
+                intent.putExtra("messid",getmessid);
+                intent.putExtra("meal","Lunch");
+                intent.putExtra("day",dayOfTheWeek);
+                intent.putExtra("date",mydate);
+
                 startActivity(intent);
             }
         });
@@ -358,6 +387,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Upload.class);
+                intent.putExtra("messid",getmessid);
+                intent.putExtra("meal","Dinner");
+                intent.putExtra("day",dayOfTheWeek);
+                intent.putExtra("date",mydate);
+
+                startActivity(intent);
+            }
+        });
+
+        OfferButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Offer.class);
+                intent.putExtra("messid",getmessid);
                 startActivity(intent);
             }
         });
