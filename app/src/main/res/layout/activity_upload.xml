@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+
     android:padding="16dp"
     >
 
     <TextView
-        android:id="@+id/contact_form_title"
+        android:id="@+id/menu_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -24,40 +28,6 @@
         android:typeface="serif" />
 
     <EditText
-        android:id="@+id/vegie1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Vegie1"
-        android:inputType="textCapWords" />
-
-    <EditText
-        android:id="@+id/vegie2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Vegie2"
-        android:inputType="textCapWords" />
-
-    <EditText
-        android:id="@+id/vegie3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Vegie3"
-        android:inputType="textCapWords" />
-
-    <EditText
-        android:id="@+id/rice"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Rice"
-        android:inputType="textCapWords" />
-
-    <EditText
         android:id="@+id/roti"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -65,21 +35,89 @@
         android:hint="Roti"
         android:inputType="textCapWords" />
 
-    <EditText
-        android:id="@+id/speical1"
-        android:layout_width="fill_parent"
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view_1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:elevation="3dp"
+        card_view:cardCornerRadius="3dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/vegie1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:hint="Vegie1"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/vegie2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:hint="Vegie2"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/vegie3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:hint="Vegie3"
+            android:inputType="textCapWords" />
+    </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+    <EditText
+        android:id="@+id/rice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
         android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Special One"
+        android:hint="Rice"
         android:inputType="textCapWords" />
 
-    <EditText
-        android:id="@+id/special2"
-        android:layout_width="fill_parent"
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view_2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Special Two"
-        android:inputType="textCapWords" />
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:elevation="3dp"
+        card_view:cardCornerRadius="3dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/special"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:hint="Special"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/special2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:hint="SpecialExtra"
+            android:inputType="textCapWords" />
+
+
+    </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
     <EditText
         android:id="@+id/other"

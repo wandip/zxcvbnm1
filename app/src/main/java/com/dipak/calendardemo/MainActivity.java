@@ -1,15 +1,21 @@
 package com.dipak.calendardemo;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -30,43 +36,66 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMMM - yyyy");
-    public CompactCalendarView Calendar;
+    SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMMM, yyyy");
+
+
+    CompactCalendarView Calendar;
     TextView Month;
+    TextView lview,dview;
     String server_response;
     Event lunch_event,dinner_event;
     JSONObject jObj = null;
-    String dayOfTheWeek,mydate;
-
+    String dayOfTheWeek,mydate,dayforDBH;
+    TextView today;
     String json = "";
     long oneday = 24*60*60*1000;
     long fpfhour = 5*60*60*1000+30*60*1000;
 
     String getmessid;
-    private ProgressDialog pDialog;
+    ProgressDialog pDialog;
     Button LunchButton,DinnerButton,OfferButton;
     boolean status[][];
+    SharedPreferences prefs;
 
-
+    DatabaseHandler dbh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         /*Bundle bundle = getIntent().getExtras();
         getmessid = bundle.getString("messid");*/
 
         getmessid = "Mess5";
+        dbh = new DatabaseHandler(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        final GetServerDate gsd = new GetServerDate();
-        gsd.execute("http://wanidipak56.000webhostapp.com/try.php");
+        if(!prefs.getBoolean("firstTime", false)) {
+            // run your one time code
+            SharedPreferences.Editor editor = prefs.edit();
+            Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show();
+            dbh.addFirst();
+            editor.putBoolean("firstTime", true);
+            editor.commit();
+        }
 
+
+        if(inetcheck()) {
+            final GetServerDate gsd = new GetServerDate();
+            gsd.execute("http://wanidipak56.000webhostapp.com/try.php");
+
+        }
+        else
+        {
+            Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
+            setCalendar();
+        }
 
     }
 
@@ -167,13 +196,33 @@ public class MainActivity extends AppCompatActivity {
                     }
                     is.close();
                     json = sb.toString();
+
+
                 } catch (Exception e) {
                     Log.e("Buffer Error", "Error converting result " + e.toString());
                 }
 
                 // try parse the string to a JSON object
-                try {
+
                     jObj = new JSONObject(json);
+
+                    try {
+                        int success = jObj.getInt("success");
+
+                        if (success == 1) {
+                            JSONArray mess = jObj.getJSONArray("messweek");
+
+                            JSONObject c = mess.getJSONObject(0);
+
+                            dbh.setFlagWeekMenu(c);
+
+
+                            Log.i("setFlagMain",c.toString());
+
+                        } else {
+                            Log.d("Dipak: ", "Not found! @ 245 in setCalendar");
+                        }
+
                 } catch (JSONException e) {
                     Log.e("JSON Parser", "Error parsing data " + e.toString());
                 }
@@ -201,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(s);
 
             pDialog.dismiss();
+            new GetWeekMenu().execute();
+
             setCalendar();
 
         }
@@ -209,23 +260,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void setCalendar() {
 
+        today = (TextView) findViewById(R.id.textView7);
+        lview = (TextView) findViewById(R.id.textView2);
+        dview = (TextView) findViewById(R.id.textView3);
+
         LunchButton = (Button) findViewById(R.id.button2);
         DinnerButton = (Button) findViewById(R.id.button);
         OfferButton = (Button) findViewById(R.id.button4);
 
         Calendar = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
-        LunchButton.setBackgroundColor(Color.LTGRAY);
-        DinnerButton.setBackgroundColor(Color.LTGRAY);
-        final TextView lview = (TextView) findViewById(R.id.textView2);
-        final TextView dview = (TextView) findViewById(R.id.textView3);
-
-
         Calendar.setUseThreeLetterAbbreviation(true);
+
+
+        LunchButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+        DinnerButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
         Date newDate = null;
         try {
-            newDate = sdf.parse(server_response);
+            if(inetcheck())
+            {
+                newDate = sdf.parse(server_response);
+            }
+            else
+            {
+                java.util.Calendar c = java.util.Calendar.getInstance();
+                newDate = c.getTime();
+            }
+
             Log.v("Setting Date", newDate.toString());
         } catch (ParseException e) {
             e.printStackTrace();
@@ -234,55 +297,17 @@ public class MainActivity extends AppCompatActivity {
         final Date minDate = new Date((newDate.getTime())-((newDate.getTime())%(oneday)) -fpfhour);
         final Date maxDate = new Date((newDate.getTime()+6*oneday)-((newDate.getTime()+6*oneday)%(oneday))-fpfhour);
 
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE : dd/MMM");
+        String tod = simpleDateFormat.format(minDate);
+        today.setText(tod);
+
+
         final int dayName = minDate.getDay();
 
         Log.e("minDate Day",String.valueOf(dayName));
 
-
-        try {
-            int success = jObj.getInt("success");
-            status = new boolean[8][2];
-
-            if (success == 1) {
-                JSONArray mess = jObj.getJSONArray("messweek");
-
-                JSONObject c = mess.getJSONObject(0);
-                if(c.getString("lunsun").equals("1"))
-                    status[0][0]=true;
-                if(c.getString("lunmon").equals("1"))
-                    status[1][0]=true;
-                if(c.getString("luntue").equals("1"))
-                    status[2][0]=true;
-                if(c.getString("lunwed").equals("1"))
-                    status[3][0]=true;
-                if(c.getString("lunthu").equals("1"))
-                    status[4][0]=true;
-                if(c.getString("lunfri").equals("1"))
-                    status[5][0]=true;
-                if(c.getString("lunsat").equals("1"))
-                    status[6][0]=true;
-
-                if(c.getString("dinsun").equals("1"))
-                    status[0][1]=true;
-                if(c.getString("dinmon").equals("1"))
-                    status[1][1]=true;
-                if(c.getString("dintue").equals("1"))
-                    status[2][1]=true;
-                if(c.getString("dinwed").equals("1"))
-                    status[3][1]=true;
-                if(c.getString("dinthu").equals("1"))
-                    status[4][1]=true;
-                if(c.getString("dinfri").equals("1"))
-                    status[5][1]=true;
-                if(c.getString("dinsat").equals("1"))
-                    status[6][1]=true;
-
-            } else {
-                Log.d("Dipak: ", "Not found! @ 245 in setCalendar");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        status = dbh.getFlagWeekMenu();
 
         int startnumber = dayName;
         for (int i = 0; i < 7; i++)
@@ -307,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
         Calendar.setVisibility(View.VISIBLE);
 
-        Month = (TextView) findViewById(R.id.textView);
+        Month = (TextView) findViewById(R.id.textview);
         Month.setText(dateFormatForMonth.format(Calendar.getFirstDayOfCurrentMonth()));
         Month.setVisibility(View.VISIBLE);
 
@@ -323,6 +348,11 @@ public class MainActivity extends AppCompatActivity {
 
                 dayOfTheWeek = sdf.format(dateClicked);
 
+                SimpleDateFormat sdfweek = new SimpleDateFormat("EEE");
+
+                dayforDBH = sdfweek.format(dateClicked).toUpperCase();
+                Log.i("day for dbh",dayforDBH);
+
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
                 mydate = df.format(dateClicked);
@@ -334,12 +364,19 @@ public class MainActivity extends AppCompatActivity {
 
                     int daynum = dateClicked.getDay();
                     if(status[daynum][0])
-                        lview.setText("Lunch Set");
+                    {
+                        Menu m = dbh.getMenu(dayforDBH,"Lunch");
+                        lview.setText("Lunch Set : "+m.toString());
+                    }
                     else
                         lview.setText("Lunch Not Set");
 
                     if(status[daynum][1])
-                        dview.setText("Dinner Set");
+                    {
+                        Menu m = dbh.getMenu(dayforDBH,"Dinner");
+                        dview.setText("Dinner Set : "+m.toString());
+
+                    }
                     else
                         dview.setText("Dinner Not Set");
 
@@ -351,8 +388,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     LunchButton.setClickable(false);
                     DinnerButton.setClickable(false);
-                    LunchButton.setBackgroundColor(Color.LTGRAY);
-                    DinnerButton.setBackgroundColor(Color.LTGRAY);
+                    LunchButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                    DinnerButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
 
                     lview.setText("Sorry not available");
                     dview.setText("Sorry not available");
@@ -373,39 +410,61 @@ public class MainActivity extends AppCompatActivity {
         LunchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Upload.class);
-                intent.putExtra("messid",getmessid);
-                intent.putExtra("meal","Lunch");
-                intent.putExtra("day",dayOfTheWeek);
-                intent.putExtra("date",mydate);
 
-                startActivity(intent);
+                if(inetcheck()) {
+                    Intent intent = new Intent(MainActivity.this, Upload.class);
+                    intent.putExtra("messid", getmessid);
+                    intent.putExtra("meal", "Lunch");
+                    intent.putExtra("day", dayOfTheWeek);
+                    intent.putExtra("date", mydate);
+
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Connect to Internet", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         DinnerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Upload.class);
-                intent.putExtra("messid",getmessid);
-                intent.putExtra("meal","Dinner");
-                intent.putExtra("day",dayOfTheWeek);
-                intent.putExtra("date",mydate);
+                if(inetcheck()) {
+                    Intent intent = new Intent(MainActivity.this, Upload.class);
+                    intent.putExtra("messid", getmessid);
+                    intent.putExtra("meal", "Dinner");
+                    intent.putExtra("day", dayOfTheWeek);
+                    intent.putExtra("date", mydate);
 
-                startActivity(intent);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Connect to Internet", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
 
         OfferButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Offer.class);
-                intent.putExtra("messid",getmessid);
-                startActivity(intent);
+                if(inetcheck()) {
+                    Intent intent = new Intent(MainActivity.this, Offer.class);
+                    intent.putExtra("messid", getmessid);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Connect to Internet", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
 
     }
+
 
     private String readStream(InputStream in) {
         BufferedReader reader = null;
@@ -429,4 +488,51 @@ public class MainActivity extends AppCompatActivity {
         }
         return response.toString();
     }
+
+    class GetWeekMenu extends AsyncTask<Void, Void, Void> {
+
+        private String TAG = MainActivity.class.getSimpleName();
+        String jsonStr;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            HttpHandler sh = new HttpHandler();
+            jsonStr = sh.makeServiceCall("http://wanidipak56.000webhostapp.com/getMenu.php?messname=Anand%20Food%20Xprs");
+
+            Log.e(TAG, "Response from url: " + jsonStr);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            setWeekMenuinSQLITE(jsonStr);
+        }
+    }
+
+    private void setWeekMenuinSQLITE(String jsonStr) {
+        dbh.setWeekMenu(jsonStr);
+    }
+
+
+    boolean inetcheck()
+    {
+        boolean connected;
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
+        return connected;
+    }
+
 }

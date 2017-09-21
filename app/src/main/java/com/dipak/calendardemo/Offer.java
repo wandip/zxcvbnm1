@@ -42,12 +42,17 @@ public class Offer extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         messid = bundle.getString("messid");
-        offer = "Larry Larry, I was Calling you Larry!!";
+        setTitle("Upload Offer");
+
+
+        final EditText offerdesc = (EditText) findViewById(R.id.offerdescription);
+
 
 
         uploadbtn = (Button) findViewById(R.id.button3);
 
         final EditText edittext= (EditText) findViewById(R.id.Birthday);
+        edittext.setKeyListener(null);
 
         final Calendar myCalendar = Calendar.getInstance();
 
@@ -84,8 +89,10 @@ public class Offer extends AppCompatActivity {
             public void onClick(View v) {
 
 
+                offer = offerdesc.getText().toString();
+
                 AlertDialog.Builder a_b = new AlertDialog.Builder(Offer.this);
-                a_b.setMessage("Release Offer ?")
+                a_b.setMessage("Release Offer : "+offer)
                         .setCancelable(false)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
