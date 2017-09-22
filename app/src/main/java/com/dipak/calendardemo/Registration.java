@@ -31,27 +31,27 @@ public class Registration extends AppCompatActivity {
     private EditText ownerName;
     private EditText messAddress;
     private EditText nbCollege;
-    private EditText guestCharge;
-    private EditText monthlyCharge;
+    /*private EditText guestCharge;
+    private EditText monthlyCharge;*/
     private EditText contact;
-    private EditText lunchOpen;
+    /*private EditText lunchOpen;
     private EditText lunchClose;
     private EditText dinnerOpen;
-    private EditText dinnerClose;
+    private EditText dinnerClose;*/
     private Button submit;
 
     String MessName;
     String OwnerName;
     String MessAddress;
     String NbCollege;
-    String GuestCharge;
+    /*String GuestCharge;
     String MonthlyCharge;
-    String Contact;
-    String LunchOpen;
+    */String Contact;
+    /*String LunchOpen;
     String LunchClose;
     String DinnerOpen;
     String DinnerClose;
-    String messid;
+    */String messid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +71,8 @@ public class Registration extends AppCompatActivity {
         ownerName = (EditText) findViewById(R.id.editText4);
         messAddress  = (EditText) findViewById(R.id.editText6);
         nbCollege = (EditText) findViewById(R.id.editText8);
-        guestCharge = (EditText) findViewById(R.id.editText10);
-        monthlyCharge = (EditText) findViewById(R.id.editText9);
-        contact = (EditText) findViewById(R.id.editText16);
-        lunchOpen = (EditText) findViewById(R.id.editText12);
-        lunchClose = (EditText) findViewById(R.id.editText11);
-        dinnerOpen = (EditText) findViewById(R.id.editText14);
-        dinnerClose = (EditText) findViewById(R.id.editText13);
+         contact = (EditText) findViewById(R.id.editText16);
+
         submit = (Button) findViewById(R.id.button2);
 
         contact.setText(PhoneNum);
@@ -92,13 +87,13 @@ public class Registration extends AppCompatActivity {
                 OwnerName = ownerName.getText().toString();
                 MessAddress= messAddress.getText().toString();
                 NbCollege = nbCollege.getText().toString();
-                GuestCharge = guestCharge.getText().toString();
-                MonthlyCharge = monthlyCharge.getText().toString();
+               /* GuestCharge = guestCharge.getText().toString();
+                MonthlyCharge = monthlyCharge.getText().toString();*/
                 Contact = contact.getText().toString();
-                LunchOpen = lunchOpen.getText().toString();
+                /*LunchOpen = lunchOpen.getText().toString();
                 LunchClose = lunchClose.getText().toString();
                 DinnerOpen = dinnerOpen.getText().toString();
-                DinnerClose = dinnerClose.getText().toString();
+                DinnerClose = dinnerClose.getText().toString();*/
 
                 new AddMess().execute();
 
@@ -229,12 +224,12 @@ public class Registration extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("messid", messid);
                 jsonObject.put("name", MessName);
-                jsonObject.put("gcharge", GuestCharge);
+                /*jsonObject.put("gcharge", GuestCharge);
                 jsonObject.put("lopen", LunchOpen);
                 jsonObject.put("lclose", LunchClose);
                 jsonObject.put("dopen", DinnerOpen);
                 jsonObject.put("dclose", DinnerClose);
-                jsonObject.put("mcharge", MonthlyCharge);
+                jsonObject.put("mcharge", MonthlyCharge);*/
                 jsonObject.put("contact", Contact);
                 jsonObject.put("address", MessAddress);
                 jsonObject.put("nbcollege", NbCollege);

@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*Bundle bundle = getIntent().getExtras();
-        getmessid = bundle.getString("messid");*/
+        Bundle bundle = getIntent().getExtras();
+        getmessid = bundle.getString("messid");
 
         getmessid = "Mess5";
         dbh = new DatabaseHandler(this);

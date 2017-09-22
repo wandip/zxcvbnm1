@@ -54,7 +54,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="wrap_content"
@@ -64,7 +65,7 @@
                 <EditText
                     android:id="@+id/code_text"
                     android:layout_width="192dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:ems="10"
                     android:hint="Code"
                     android:inputType="textPersonName" />
