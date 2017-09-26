@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +16,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -40,13 +45,17 @@ public class Upload extends AppCompatActivity {
     ProgressDialog pDialog;
     String response;
     DatabaseHandler databaseHandler;
+    private RadioButton mOneRadioButton;
+    private RadioButton mTwoRadioButton;
+    private RadioButton mThreeRadioButton;
+    private RadioButton mFourRadioButton;
+    private RadioButton mFiveRadioButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_upload);
-
-
 
         Bundle bundle = getIntent().getExtras();
         messid = bundle.getString("messid");
@@ -54,6 +63,91 @@ public class Upload extends AppCompatActivity {
         dayname = bundle.getString("day");
         getdate =bundle.getString("date");
 
+        mOneRadioButton = (RadioButton) findViewById(R.id.one_radio_btn);
+        mTwoRadioButton = (RadioButton) findViewById(R.id.two_radio_btn);
+        mThreeRadioButton = (RadioButton) findViewById(R.id.three_radio_btn);
+        mFourRadioButton = (RadioButton) findViewById(R.id.four_radio_btn);
+        mFiveRadioButton = (RadioButton) findViewById(R.id.two_radio_btn_1);
+
+        databaseHandler = new DatabaseHandler(this);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllVegies());
+        final MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.vegie1);
+
+        textView.setAdapter(adapter);
+        textView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textView.showDropDown();
+            }
+        });
+
+
+        mOneRadioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOneRadioButton.setChecked(true);
+                mTwoRadioButton.setChecked(false);
+                mThreeRadioButton.setChecked(false);
+                mFourRadioButton.setChecked(false);
+                mFiveRadioButton.setChecked(false);
+                temp = (EditText) findViewById(R.id.rice);
+                temp.setText(mOneRadioButton.getText());
+
+            }
+        });
+        mTwoRadioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOneRadioButton.setChecked(false);
+                mTwoRadioButton.setChecked(true);
+                mThreeRadioButton.setChecked(false);
+                mFourRadioButton.setChecked(false);
+                mFiveRadioButton.setChecked(false);
+                temp = (EditText) findViewById(R.id.rice);
+                temp.setText(mTwoRadioButton.getText());
+
+            }
+        });
+        mThreeRadioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOneRadioButton.setChecked(false);
+                mTwoRadioButton.setChecked(false);
+                mThreeRadioButton.setChecked(true);
+                mFourRadioButton.setChecked(false);
+                mFiveRadioButton.setChecked(false);
+                temp = (EditText) findViewById(R.id.rice);
+                temp.setText(mThreeRadioButton.getText());
+            }
+        });
+        mFourRadioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOneRadioButton.setChecked(false);
+                mTwoRadioButton.setChecked(false);
+                mThreeRadioButton.setChecked(false);
+                mFourRadioButton.setChecked(true);
+                mFiveRadioButton.setChecked(false);
+                temp = (EditText) findViewById(R.id.rice);
+                temp.setText(mFourRadioButton.getText());
+            }
+        });
+
+        mFiveRadioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOneRadioButton.setChecked(false);
+                mTwoRadioButton.setChecked(false);
+                mThreeRadioButton.setChecked(false);
+                mFourRadioButton.setChecked(false);
+                mFiveRadioButton.setChecked(true);
+                temp = (EditText) findViewById(R.id.rice);
+                temp.setText(mFiveRadioButton.getText());
+            }
+        });
 
         setTitle(meal+", "+getdate+" : "+dayname);
 
@@ -81,6 +175,39 @@ public class Upload extends AppCompatActivity {
             temp.setText(m.getOther());
         }
 
+        RadioGroup rg = (RadioGroup) findViewById(R.id.radio_group);
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
+
+                RadioButton b = (RadioButton) findViewById(checkedId);
+                temp = (EditText) findViewById(R.id.roti);
+                temp.setText(b.getText());
+            }
+        });
+
+
+
+
+
+
+        //RadioGroup riceradio = (RadioGroup) findViewById(R.id.radGroup1);
+
+
+/*        riceradio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
+
+                RadioButton b = (RadioButton) findViewById(checkedId);
+                temp = (EditText) findViewById(R.id.rice);
+                temp.setText(b.getText());
+            }
+        });
+*/
 
         Button b1 = (Button) findViewById(R.id.uploadbtn);
 
@@ -128,6 +255,15 @@ public class Upload extends AppCompatActivity {
                 alertDialog.show();
             }
         });
+    }
+
+    public void setRotiTxt(CharSequence rotiTxt) {
+
+
+       // EditText tempp=(EditText)findViewById(R.id.rice);
+        temp.setText(rotiTxt);
+
+
     }
 
 
@@ -237,3 +373,17 @@ public class Upload extends AppCompatActivity {
 
     }
 }
+
+
+/*switch(checkedId)
+                {
+                    case R.id.radio1:
+                        RadioButton b = (RadioButton) findViewById(checkedId);
+                        break;
+                    case R.id.radio2:
+                        // TODO Something
+                        break;
+                    case R.id.radio3:
+                        // TODO Something
+                        break;
+                }*/

@@ -28,13 +28,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class Offer extends AppCompatActivity {
 
     String messid,offerdate,offer,response;
     Button uploadbtn;
+    Date newDate;
+    String today;
     ProgressDialog pDialog;
+    long oneday = 24*60*60*1000;
+    long fpfhour = 5*60*60*1000+30*60*1000;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,11 +49,12 @@ public class Offer extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         messid = bundle.getString("messid");
+        final long minDate = bundle.getLong("mindate");
+        final long maxDate = bundle.getLong("maxdate");
         setTitle("Upload Offer");
 
 
         final EditText offerdesc = (EditText) findViewById(R.id.offerdescription);
-
 
 
         uploadbtn = (Button) findViewById(R.id.button3);
@@ -62,13 +70,20 @@ public class Offer extends AppCompatActivity {
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
                 // TODO Auto-generated method stub
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat = "dd/MM/yy"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                offerdate = sdf.format(myCalendar.getTime());
-                edittext.setText(offerdate);
+                    myCalendar.set(Calendar.YEAR, year);
+                    myCalendar.set(Calendar.MONTH, monthOfYear);
+                    myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                if(myCalendar.getTimeInMillis()<minDate || myCalendar.getTimeInMillis()>maxDate)
+                {
+                    Toast.makeText(Offer.this, "Cannot Select", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    String myFormat = "dd MMMM yy"; //In which you need put here
+                    SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                    offerdate = sdf.format(myCalendar.getTime());
+                    edittext.setText(offerdate);
+                }
             }
 
         };
@@ -78,9 +93,13 @@ public class Offer extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                new DatePickerDialog(Offer.this, date, myCalendar
+                DatePickerDialog dpd = new DatePickerDialog(Offer.this, date, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                dpd.setTitle("Select Offer Date");
+                dpd.getDatePicker().setMinDate(minDate);
+                dpd.getDatePicker().setMaxDate(maxDate);
+                dpd.show();
             }
         });
 

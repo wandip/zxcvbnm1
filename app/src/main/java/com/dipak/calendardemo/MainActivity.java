@@ -4,10 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,13 +59,16 @@ public class MainActivity extends AppCompatActivity {
     long oneday = 24*60*60*1000;
     long fpfhour = 5*60*60*1000+30*60*1000;
 
+    long mind,maxd,nextmonth;
     String getmessid;
     ProgressDialog pDialog;
     Button LunchButton,DinnerButton,OfferButton;
     boolean status[][];
     SharedPreferences prefs;
+    String messname;
 
     DatabaseHandler dbh;
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,24 +77,44 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         getmessid = bundle.getString("messid");
 
-        getmessid = "Mess5";
+        context=this;
+
+        //getmessid = "Mess5";
         dbh = new DatabaseHandler(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
 
         if(!prefs.getBoolean("firstTime", false)) {
             // run your one time code
             SharedPreferences.Editor editor = prefs.edit();
-            Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Welcome! "+prefs.getString("ownername","Owner"), Toast.LENGTH_SHORT).show();
             dbh.addFirst();
             editor.putBoolean("firstTime", true);
             editor.commit();
         }
 
+        if(prefs.getString("messname","null").equals("null")){
+            new GetMessName().execute("http://wanidipak56.000webhostapp.com/getMessname.php?messname="+getmessid);
+        }
 
         if(inetcheck()) {
             final GetServerDate gsd = new GetServerDate();
+
             gsd.execute("http://wanidipak56.000webhostapp.com/try.php");
 
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run() {
+                    if ( gsd.getStatus() == AsyncTask.Status.RUNNING )
+                    {
+                        //gsd.cancel(true);
+                        //mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "No Internet", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }, Integer.parseInt(context.getString(R.string.timeout)));
         }
         else
         {
@@ -140,8 +165,66 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            new GetStatus().execute();
+            final GetStatus getStatus = new GetStatus();
+            getStatus.execute();
 
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run() {
+                    if ( getStatus.getStatus() == AsyncTask.Status.RUNNING )
+                    {
+                        //getStatus.cancel(true);
+                        //mProgressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Slow Internet :/", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+            }, Integer.parseInt(context.getString(R.string.timeout)));
+
+        }
+    }
+
+    public class GetMessName extends AsyncTask<String , Void ,String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... strings) {
+
+            URL url;
+            HttpURLConnection urlConnection;
+
+            try {
+                url = new URL(strings[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                int responseCode = urlConnection.getResponseCode();
+
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    messname = readStream(urlConnection.getInputStream());
+                    Log.v("CatalogClientMessName", messname);
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("messname", messname);
+            editor.commit();
         }
     }
 
@@ -250,7 +333,24 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(s);
 
             pDialog.dismiss();
-            new GetWeekMenu().execute();
+            final GetWeekMenu getWeekMenu = new GetWeekMenu();
+            getWeekMenu.execute();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run() {
+                    if ( getWeekMenu.getStatus() == AsyncTask.Status.RUNNING )
+                    {
+                        //getWeekMenu.cancel(true);
+
+                        Toast.makeText(MainActivity.this, "Could not load Menu", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+            }, Integer.parseInt(context.getString(R.string.timeout)));
 
             setCalendar();
 
@@ -272,10 +372,6 @@ public class MainActivity extends AppCompatActivity {
         Calendar.setUseThreeLetterAbbreviation(true);
 
 
-        LunchButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
-        DinnerButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
-
-
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
         Date newDate = null;
         try {
@@ -294,13 +390,16 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        final Date minDate = new Date((newDate.getTime())-((newDate.getTime())%(oneday)) -fpfhour);
-        final Date maxDate = new Date((newDate.getTime()+6*oneday)-((newDate.getTime()+6*oneday)%(oneday))-fpfhour);
+        mind=(newDate.getTime())-((newDate.getTime())%(oneday)) -fpfhour;
+        maxd=(newDate.getTime()+6*oneday)-((newDate.getTime()+6*oneday)%(oneday))-fpfhour;
+        nextmonth=(newDate.getTime()+29*oneday)-((newDate.getTime()+29*oneday)%(oneday))-fpfhour;
+        final Date minDate = new Date(mind);
+        final Date maxDate = new Date(maxd);
 
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE : dd/MMM");
         String tod = simpleDateFormat.format(minDate);
-        today.setText(tod);
+        today.setText("Today : "+tod);
 
 
         final int dayName = minDate.getDay();
@@ -365,31 +464,31 @@ public class MainActivity extends AppCompatActivity {
                     int daynum = dateClicked.getDay();
                     if(status[daynum][0])
                     {
-                        Menu m = dbh.getMenu(dayforDBH,"Lunch");
-                        lview.setText("Lunch Set : "+m.toString());
+                        //Menu m = dbh.getMenu(dayforDBH,"Lunch");
+                        //lview.setText("Lunch Set : "+m.toString());
                     }
                     else
                         lview.setText("Lunch Not Set");
 
                     if(status[daynum][1])
                     {
-                        Menu m = dbh.getMenu(dayforDBH,"Dinner");
-                        dview.setText("Dinner Set : "+m.toString());
+                        //Menu m = dbh.getMenu(dayforDBH,"Dinner");
+                        //dview.setText("Dinner Set : "+m.toString());
 
                     }
                     else
                         dview.setText("Dinner Not Set");
 
 
-                    LunchButton.setBackgroundColor(Color.DKGRAY);
-                    DinnerButton.setBackgroundColor(Color.DKGRAY);
+                    LunchButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
+                    DinnerButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
                 }
                 else
                 {
                     LunchButton.setClickable(false);
                     DinnerButton.setClickable(false);
-                    LunchButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
-                    DinnerButton.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                    LunchButton.setBackground(getResources().getDrawable(R.drawable.button_grey));
+                    DinnerButton.setBackground(getResources().getDrawable(R.drawable.button_grey));
 
                     lview.setText("Sorry not available");
                     dview.setText("Sorry not available");
@@ -401,8 +500,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 Month.setText(dateFormatForMonth.format(firstDayOfNewMonth));
+                mydate=null;
+                dayOfTheWeek=null;
             }
         });
+
 
 
 
@@ -413,12 +515,19 @@ public class MainActivity extends AppCompatActivity {
 
                 if(inetcheck()) {
                     Intent intent = new Intent(MainActivity.this, Upload.class);
-                    intent.putExtra("messid", getmessid);
-                    intent.putExtra("meal", "Lunch");
-                    intent.putExtra("day", dayOfTheWeek);
-                    intent.putExtra("date", mydate);
+                    if(dayOfTheWeek==null || mydate==null)
+                    {
+                        Toast.makeText(MainActivity.this, "Select Date", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        intent.putExtra("messid", getmessid);
+                        intent.putExtra("meal", "Lunch");
+                        intent.putExtra("day", dayOfTheWeek);
+                        intent.putExtra("date", mydate);
 
-                    startActivity(intent);
+                        startActivity(intent);
+                    }
+
                 }
                 else
                 {
@@ -431,6 +540,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(inetcheck()) {
+                    if(dayOfTheWeek==null || mydate==null)
+                    {
+                        Toast.makeText(MainActivity.this, "Select Date", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
                     Intent intent = new Intent(MainActivity.this, Upload.class);
                     intent.putExtra("messid", getmessid);
                     intent.putExtra("meal", "Dinner");
@@ -439,6 +553,8 @@ public class MainActivity extends AppCompatActivity {
 
                     startActivity(intent);
                 }
+                }
+
                 else
                 {
                     Toast.makeText(MainActivity.this, "Connect to Internet", Toast.LENGTH_SHORT).show();
@@ -453,6 +569,9 @@ public class MainActivity extends AppCompatActivity {
                 if(inetcheck()) {
                     Intent intent = new Intent(MainActivity.this, Offer.class);
                     intent.putExtra("messid", getmessid);
+                    intent.putExtra("mindate", mind);
+                    intent.putExtra("maxdate", nextmonth);
+
                     startActivity(intent);
                 }
                 else
@@ -502,8 +621,14 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             HttpHandler sh = new HttpHandler();
-            jsonStr = sh.makeServiceCall("http://wanidipak56.000webhostapp.com/getMenu.php?messname=Anand%20Food%20Xprs");
-
+            String mname = prefs.getString("messname","null");
+            if(mname.equals("null"))
+            {
+                Toast.makeText(MainActivity.this, "Some Error Occured", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                jsonStr = sh.makeServiceCall("http://wanidipak56.000webhostapp.com/getMenu.php?messname="+mname.replace(" ","%20"));
+            }
             Log.e(TAG, "Response from url: " + jsonStr);
             return null;
         }
@@ -535,4 +660,10 @@ public class MainActivity extends AppCompatActivity {
         return connected;
     }
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
+    }
 }

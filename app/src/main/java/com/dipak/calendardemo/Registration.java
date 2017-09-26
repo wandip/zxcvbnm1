@@ -1,8 +1,12 @@
 package com.dipak.calendardemo;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.CollapsibleActionView;
@@ -10,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,17 +58,20 @@ public class Registration extends AppCompatActivity {
     String DinnerClose;
     */String messid;
 
+    SharedPreferences prefs;
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
+        setTitle("Register");
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //Get Mess Id from Firebase
-        messid = "Mess5";
+        context=this;
 
-        // Get Phone Number through intent/firebase
-        String PhoneNum = "9876543210";
+        //messid = "Mess5";
 
 
 
@@ -71,12 +79,10 @@ public class Registration extends AppCompatActivity {
         ownerName = (EditText) findViewById(R.id.editText4);
         messAddress  = (EditText) findViewById(R.id.editText6);
         nbCollege = (EditText) findViewById(R.id.editText8);
-         contact = (EditText) findViewById(R.id.editText16);
+        contact = (EditText) findViewById(R.id.editText16);
 
         submit = (Button) findViewById(R.id.button2);
 
-        contact.setText(PhoneNum);
-        contact.setKeyListener(null);
 
         submit.setOnClickListener(new View.OnClickListener()
         {
@@ -95,7 +101,25 @@ public class Registration extends AppCompatActivity {
                 DinnerOpen = dinnerOpen.getText().toString();
                 DinnerClose = dinnerClose.getText().toString();*/
 
-                new AddMess().execute();
+                final AddMess messedup = new AddMess();
+                messedup.execute();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        if ( messedup.getStatus() == AsyncTask.Status.RUNNING )
+                        {
+                            //messedup.cancel(true);
+                            //mProgressDialog.dismiss();
+                            Toast.makeText(Registration.this, "No Internet", Toast.LENGTH_SHORT).show();
+                        }
+
+
+                    }
+                }, Integer.parseInt(context.getString(R.string.timeout)));
+
+
 
                 /*Log.e("messname",MessName);
                 Log.e("oname",OwnerName);
@@ -204,8 +228,7 @@ public class Registration extends AppCompatActivity {
             mProgressDialog = new ProgressDialog(Registration.this);
             mProgressDialog.setMessage("Registering...");
             mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setMax(100);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
@@ -220,9 +243,9 @@ public class Registration extends AppCompatActivity {
             try
             {
                 //constants
-                URL url = new URL("https://wanidipak56.000webhostapp.com/addMess.php");
+                URL url = new URL("https://wanidipak56.000webhostapp.com/addEnquiry.php");
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("messid", messid);
+                //jsonObject.put("messid", messid);
                 jsonObject.put("name", MessName);
                 /*jsonObject.put("gcharge", GuestCharge);
                 jsonObject.put("lopen", LunchOpen);
@@ -247,7 +270,6 @@ public class Registration extends AppCompatActivity {
                 conn.setDoOutput(true);
                 conn.setFixedLengthStreamingMode(message.getBytes().length);
 
-                publishProgress();
 
                 //make some HTTP header nicety
                 conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
@@ -275,8 +297,13 @@ public class Registration extends AppCompatActivity {
             }  finally {
                 //clean up
                 try {
-                    os.close();
-                    is.close();
+                    if(os==null || is == null)
+                        Toast.makeText(Registration.this, "Could not connect", Toast.LENGTH_SHORT).show();
+                    else{
+                        is.close();
+                        os.close();
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -286,17 +313,24 @@ public class Registration extends AppCompatActivity {
             return null;
         }
 
-        protected void onProgressUpdate(String... progress) {
-            Log.d("ANDRO_ASYNC",progress[0]);
-            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
-        }
-
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             mProgressDialog.dismiss();
-            Intent intent = new Intent(Registration.this, Verify.class);
-            intent.putExtra("messid",messid);
+
+            SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putString("messname", MessName);
+            editor.putString("nbcollege", NbCollege);
+            editor.putString("ownername", OwnerName);
+
+            editor.putString("address", MessAddress);
+            editor.putString("contactnum", Contact);
+
+
+            editor.commit();
+
+            Intent intent = new Intent(Registration.this, EmailPasswordActivity.class);
             startActivity(intent);
 
         }

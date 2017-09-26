@@ -34,6 +34,36 @@
         android:backgroundTint="@color/colorPrimaryDark"
         android:hint="Roti"
         android:inputType="textCapWords" />
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/view_below" >
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Roti/Chapati" />
+
+        <RadioButton
+            android:id="@+id/radio2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Paratha" />
+
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Naan" />
+    </RadioGroup>
+
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view_1"
@@ -48,7 +78,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/vegie1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +86,7 @@
             android:hint="Vegie1"
             android:inputType="textCapWords" />
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/vegie2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +94,7 @@
             android:hint="Vegie2"
             android:inputType="textCapWords" />
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/vegie3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,6 +114,52 @@
         android:hint="Rice"
         android:inputType="textCapWords" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/one_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Daal-Rice" />
+
+        <RadioButton
+            android:id="@+id/two_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Jeera Rice" />
+
+        <RadioButton
+            android:id="@+id/two_radio_btn_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Pulao" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/three_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Khichadi" />
+
+        <RadioButton
+            android:id="@+id/four_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Biryani" />
+    </LinearLayout>
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view_2"
@@ -98,7 +174,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/special"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,7 +182,7 @@
             android:hint="Special"
             android:inputType="textCapWords" />
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/special2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

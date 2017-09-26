@@ -19,14 +19,39 @@ public class Menu implements Serializable{
 
     @Override
     public String toString() {
-        return  ", rice='" + rice + '\'' +
-                ", roti='" + roti + '\'' +
-                ", veg1='" + veg1 + '\'' +
-                ", veg2='" + veg2 + '\'' +
-                ", veg3='" + veg3 + '\'' +
-                ", special='" + special + '\'' +
-                ", special2='" + special2 + '\'' +
-                ", other='" + other;
+
+        String menu = null;
+        if (special != null && !special.equals("null")) {
+            menu = special + ", ";
+        }
+        if (special2 != null && !special2.equals("null")) {
+            menu = menu + special2 + ", ";
+        }
+        if (veg1 != null && !veg1.equals("null")) {
+            menu = menu + veg1 + ", ";
+        }
+        if (veg2 != null && !veg2.equals("null")) {
+            menu = menu + veg2 + ", ";
+        }
+        if (veg3 != null && !veg3.equals("null")) {
+            menu = menu + veg3 + ", ";
+        }
+        if (rice != null && !rice.equals("null")) {
+            menu = menu + rice + ", ";
+        }
+        if ((roti != null && !roti.equals("null")) && (other != null && !other.equals("null"))) {
+            menu = menu + roti + ", ";
+        }
+        if ((roti != null && !roti.equals("null")) && (other == null && other.equals("null"))) {
+            menu = menu + roti + ".";
+        }
+        if (other != null && !other.equals("null")) {
+            menu = menu + other;
+        }
+
+        menu = menu + ".";
+
+        return  menu;
     }
 
 
@@ -72,8 +97,7 @@ public class Menu implements Serializable{
 
 
     public String getOther() {
-        return other;
-    }
+        return other;}
 
 
 }
