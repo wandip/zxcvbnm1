@@ -33,9 +33,34 @@
         <activity
             android:name=".Offer"
             android:screenOrientation="portrait" />
-        <activity android:name=".ExtraDetails" />
-        <activity android:name=".EmailPasswordActivity" />
-        <activity android:name=".Upload"></activity>
+        <activity
+            android:name=".ExtraDetails"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".EmailPasswordActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Upload"
+            android:screenOrientation="portrait"/>
+
+        <service android:name=".firebase_messaging.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".firebase_messaging.FirebaseIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_restaurant_black_24dp" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary" />
+
     </application>
 
 </manifest>

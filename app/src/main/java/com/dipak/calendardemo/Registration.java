@@ -82,6 +82,26 @@ public class Registration extends AppCompatActivity {
         messAddress  = (EditText) findViewById(R.id.editText6);
         contact = (EditText) findViewById(R.id.editText16);
 
+        InputFilter filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (!Character.isLetterOrDigit(source.charAt(i)) && source.charAt(i)!=' ') { // Accept only letter & digits ; otherwise just return
+                        Toast.makeText(context,"Invalid Input",Toast.LENGTH_SHORT).show();
+                        return "";
+                    }
+                }
+                return null;
+            }
+
+        };
+
+        messName.setFilters(new InputFilter[] { filter });
+        ownerName.setFilters(new InputFilter[] { filter });
+        messAddress.setFilters(new InputFilter[] { filter });
+
+
+
 
         submit = (Button) findViewById(R.id.button2);
 
@@ -94,24 +114,6 @@ public class Registration extends AppCompatActivity {
 
 
 
-
-                InputFilter filter = new InputFilter() {
-                    public CharSequence filter(CharSequence source, int start, int end,
-                                               Spanned dest, int dstart, int dend) {
-                        for (int i = start; i < end; i++) {
-                            if (!Character.isLetterOrDigit(source.charAt(i))) { // Accept only letter & digits ; otherwise just return
-                                Toast.makeText(context,"Invalid Input",Toast.LENGTH_SHORT).show();
-                                return "";
-                            }
-                        }
-                        return null;
-                    }
-
-                };
-
-                messName.setFilters(new InputFilter[] { filter });
-                ownerName.setFilters(new InputFilter[] { filter });
-                messAddress.setFilters(new InputFilter[] { filter });
 
 
                 MessName = messName.getText().toString();

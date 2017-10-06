@@ -32,7 +32,7 @@ public class Intro extends AppCompatActivity {
         else
         {
             ///has entered MainActivity
-            Intent intent = new Intent(Intro.this,MainActivity.class);
+            Intent intent = new Intent(Intro.this,EmailPasswordActivity.class);
             startActivity(intent);
         }
 

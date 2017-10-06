@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static com.dipak.calendardemo.R.drawable.calendar;
+
 public class ExtraDetails extends AppCompatActivity {
 
     private AutoCompleteTextView nbCollege;
@@ -59,7 +61,6 @@ public class ExtraDetails extends AppCompatActivity {
     SharedPreferences prefs;
     private Context context;
     ArrayList<String> college_list;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,8 @@ public class ExtraDetails extends AppCompatActivity {
         {
             new GetNBCollege().execute();
         }
+        new GetNBCollege().execute();
+
     }
 
     class GetNBCollege extends AsyncTask<Void, Void, Void> {
@@ -146,8 +149,8 @@ public class ExtraDetails extends AppCompatActivity {
         lunchClose = (EditText) findViewById(R.id.editText11);
 
 
-        dinnerClose = (EditText) findViewById(R.id.editText14);
-        dinnerOpen = (EditText) findViewById(R.id.editText13);
+        dinnerClose = (EditText) findViewById(R.id.editText13);
+        dinnerOpen = (EditText) findViewById(R.id.editText14);
 
         lunchOpen.setKeyListener(null);
         lunchClose.setKeyListener(null);
@@ -179,9 +182,9 @@ public class ExtraDetails extends AppCompatActivity {
                 mTimePicker = new TimePickerDialog(ExtraDetails.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        lunchOpen.setText( selectedHour + ":" + selectedMinute);
+                        lunchOpen.setText(String.format("%02d:%02d", selectedHour, selectedMinute));
                     }
-                }, hour, minute, true);//Yes 24 hour time
+                }, hour, minute, false);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
 
                 mTimePicker.show();
@@ -200,9 +203,9 @@ public class ExtraDetails extends AppCompatActivity {
                 mTimePicker = new TimePickerDialog(ExtraDetails.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        lunchClose.setText( selectedHour + ":" + selectedMinute);
+                        lunchClose.setText(String.format("%02d:%02d", selectedHour, selectedMinute));
                     }
-                }, hour, minute, true);//Yes 24 hour time
+                }, hour, minute, false);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
                 mTimePicker.show();
 
@@ -220,9 +223,9 @@ public class ExtraDetails extends AppCompatActivity {
                 mTimePicker = new TimePickerDialog(ExtraDetails.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        dinnerOpen.setText( selectedHour + ":" + selectedMinute);
+                        dinnerOpen.setText(String.format("%02d:%02d", selectedHour, selectedMinute));
                     }
-                }, hour, minute, true);//Yes 24 hour time
+                }, hour, minute, false);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
                 mTimePicker.show();
 
@@ -240,9 +243,9 @@ public class ExtraDetails extends AppCompatActivity {
                 mTimePicker = new TimePickerDialog(ExtraDetails.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        dinnerClose.setText( selectedHour + ":" + selectedMinute);
+                        dinnerClose.setText(String.format("%02d:%02d", selectedHour, selectedMinute));
                     }
-                }, hour, minute, true);//Yes 24 hour time
+                }, hour, minute, false);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
                 mTimePicker.show();
 
@@ -262,23 +265,43 @@ public class ExtraDetails extends AppCompatActivity {
                 DinnerOpen = dinnerOpen.getText().toString();
                 DinnerClose = dinnerClose.getText().toString();
 
-                final Edetails messedup = new Edetails();
-                messedup.execute();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable()
+                int t1,t2,t3,t4;
+                t1 = Integer.parseInt(LunchOpen.replace(":",""));
+                t2 = Integer.parseInt(LunchClose.replace(":",""));
+                t3 = Integer.parseInt(DinnerOpen.replace(":",""));
+                t4 = Integer.parseInt(DinnerClose.replace(":",""));
+
+                Log.e("Extr1",String.valueOf(t1));
+                Log.e("Extr2",String.valueOf(t2));
+                Log.e("Extr3",String.valueOf(t3));
+                Log.e("Extr4",String.valueOf(t4));
+
+                if(t1<t2 && t2<t3 && t3<t4)
                 {
-                    @Override
-                    public void run() {
-                        if ( messedup.getStatus() == AsyncTask.Status.RUNNING )
-                        {
-                            //messedup.cancel(true);
-                            //mProgressDialog.dismiss();
-                            Toast.makeText(ExtraDetails.this, "No Internet", Toast.LENGTH_SHORT).show();
+                    final Edetails messedup = new Edetails();
+                    messedup.execute();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable()
+                    {
+                        @Override
+                        public void run() {
+                            if ( messedup.getStatus() == AsyncTask.Status.RUNNING )
+                            {
+                                //messedup.cancel(true);
+                                //mProgressDialog.dismiss();
+                                Toast.makeText(ExtraDetails.this, "No Internet", Toast.LENGTH_SHORT).show();
+                            }
+
+
                         }
+                    }, Integer.parseInt(context.getString(R.string.timeout)));
+                }
+                else
+                {
+                    Toast.makeText(context, "Wrong Time", Toast.LENGTH_SHORT).show();
+                }
 
 
-                    }
-                }, Integer.parseInt(context.getString(R.string.timeout)));
 
             }
         });

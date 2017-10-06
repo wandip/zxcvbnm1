@@ -181,7 +181,7 @@ public class Upload extends AppCompatActivity {
                 android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllVegies());
         vegie1.setAdapter(adapter);
         vegie1.setThreshold(1);
-
+        vegie1.setDropDownHeight(250);
         vegie1.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -192,7 +192,7 @@ public class Upload extends AppCompatActivity {
 
         vegie2.setAdapter(adapter);
         vegie2.setThreshold(1);
-
+        vegie2.setDropDownHeight(250);
         vegie2.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -204,7 +204,7 @@ public class Upload extends AppCompatActivity {
 
         vegie3.setAdapter(adapter);
         vegie3.setThreshold(1);
-
+        vegie3.setDropDownHeight(250);
         vegie3.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -219,7 +219,7 @@ public class Upload extends AppCompatActivity {
                 android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllSpecials());
         spec.setAdapter(adapter_spe);
         spec.setThreshold(1);
-
+        spec.setDropDownHeight(20);
         spec.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -230,7 +230,7 @@ public class Upload extends AppCompatActivity {
 
         spec2.setAdapter(adapter_spe);
         spec2.setThreshold(1);
-
+        spec2.setDropDownHeight(250);
         spec2.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -347,6 +347,19 @@ public class Upload extends AppCompatActivity {
                 special2 = temp.getText().toString();
                 temp = (EditText) findViewById(R.id.other);
                 other = temp.getText().toString();
+
+                if(veg1.length()>1)
+                    databaseHandler.addVegie(veg1);
+                if(veg2.length()>1)
+                    databaseHandler.addVegie(veg2);
+                if(veg3.length()>1)
+                    databaseHandler.addVegie(veg3);
+
+                if(special.length()>1)
+                    databaseHandler.addSpecial(special);
+                if(special2.length()>1)
+                    databaseHandler.addSpecial(special2);
+
 
 
                 AlertDialog.Builder a_b = new AlertDialog.Builder(Upload.this);
@@ -470,7 +483,7 @@ public class Upload extends AppCompatActivity {
 
             Log.e("Upload",response);
             pDialog.dismiss();
-            Toast.makeText(getApplicationContext(),"Successful",Toast.LENGTH_LONG).show();
+            Toast.makeText(Upload.this,"Successful",Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(Upload.this, MainActivity.class);
             startActivity(intent);

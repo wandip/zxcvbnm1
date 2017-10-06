@@ -118,6 +118,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
+    public void addVegie(String vegie)
+    {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        String insertsql2 = "INSERT INTO '"+VEG_INFO_TABLE_NAME+"' ('"+VEG_INFO_Column+"') VALUES" +
+                "    ('"+vegie+"')";
+
+
+        database.execSQL(insertsql2);
+
+        database.close();
+
+    }
+
+    public void addSpecial(String spec)
+    {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        String insertsql3 = "INSERT INTO '"+SPE_INFO_TABLE_NAME+"' ('"+SPE_INFO_Column+"') VALUES" +
+                " ('"+spec+"')";
+
+        database.execSQL(insertsql3);
+
+        database.close();
+
+    }
+
+
     public ArrayList<String> getAllVegies() {
         ArrayList<String> contactList = new ArrayList<>();
         contactList.clear();

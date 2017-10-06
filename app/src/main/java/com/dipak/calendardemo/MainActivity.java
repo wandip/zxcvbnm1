@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -13,6 +14,9 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +25,7 @@ import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("firstTime", true);
             editor.commit();
         }
+
+
+        FirebaseMessaging.getInstance().subscribeToTopic("owner_notif");
 
         if(prefs.getString("messname","null").equals("null")){
             Log.i("messn",messname);
@@ -422,7 +430,11 @@ public class MainActivity extends AppCompatActivity {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE-dd");
         String tod = simpleDateFormat.format(minDate);
-        today.setText("Today : "+tod);
+
+        String todaytext = "Today : ";
+        SpannableString str = new SpannableString(todaytext + tod);
+        str.setSpan(new StyleSpan(Typeface.BOLD), 0, todaytext.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        today.setText(str);
 
 
         final int dayName = minDate.getDay();
@@ -488,9 +500,16 @@ public class MainActivity extends AppCompatActivity {
 
                         if (status[daynum][0]) {
                             Menu m = dbh.getMenu(dayforDBH, "Lunch");
-                            lview.setText("Lunch Set : " + m.toString());
+
+                            String boldText = "Lunch Set : ";
+                            String normalText = m.toString();
+                            SpannableString str = new SpannableString(boldText + normalText);
+                            str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            lview.setText(str);
                         } else
+                        {
                             lview.setText("Lunch Not Set");
+                        }
 
                         LunchButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
                     }
@@ -510,7 +529,11 @@ public class MainActivity extends AppCompatActivity {
                         DinnerButton.setClickable(true);
                         if (status[daynum][1]) {
                             Menu m = dbh.getMenu(dayforDBH, "Dinner");
-                            dview.setText("Dinner Set : " + m.toString());
+                            String boldText = "Dinner Set : ";
+                            String normalText = m.toString();
+                            SpannableString str = new SpannableString(boldText + normalText);
+                            str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            dview.setText(str);
 
                         } else
                             dview.setText("Dinner Not Set");
@@ -708,6 +731,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        moveTaskToBack(true);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

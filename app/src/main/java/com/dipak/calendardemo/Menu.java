@@ -20,32 +20,30 @@ public class Menu implements Serializable{
     @Override
     public String toString() {
 
-        String menu = null;
-        if (special != null && !special.equals("null")) {
+        String menu = "";
+        if (special != null && !special.equals("null") && special.length()>1) {
             menu = special + ", ";
         }
-        if (special2 != null && !special2.equals("null")) {
+        if (special2 != null && !special2.equals("null") && special2.length()>1) {
             menu = menu + special2 + ", ";
         }
-        if (veg1 != null && !veg1.equals("null")) {
+        if (veg1 != null && !veg1.equals("null") && veg1.length()>1) {
             menu = menu + veg1 + ", ";
         }
-        if (veg2 != null && !veg2.equals("null")) {
+        if (veg2 != null && !veg2.equals("null") && veg2.length()>1) {
             menu = menu + veg2 + ", ";
         }
-        if (veg3 != null && !veg3.equals("null")) {
+        if (veg3 != null && !veg3.equals("null") && veg3.length()>1) {
             menu = menu + veg3 + ", ";
         }
-        if (rice != null && !rice.equals("null")) {
+        if (rice != null && !rice.equals("null") && rice.length()>1) {
             menu = menu + rice + ", ";
         }
-        if ((roti != null && !roti.equals("null")) && (other != null && !other.equals("null"))) {
+        if ((roti != null && !roti.equals("null")) && roti.length()>1) {
             menu = menu + roti + ", ";
         }
-        if ((roti != null && !roti.equals("null")) && (other == null && other.equals("null"))) {
-            menu = menu + roti + ".";
-        }
-        if (other != null && !other.equals("null")) {
+
+        if (other != null && !other.equals("null") && other.length()>1)  {
             menu = menu + other;
         }
 
