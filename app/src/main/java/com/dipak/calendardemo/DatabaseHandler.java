@@ -39,27 +39,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             MESS_TABLE_Column_2_menu_details+" VARCHAR) ";
 
 
-    private static final String MENU_INFO_TABLE_NAME="Menu";
-    private static final String MENU_INFO_Column_1_veg="Vegie";
-    private static final String MENU_INFO_Column_2_spec="Special";
-    private static final String CREATE_TABLE_MENU
-            ="CREATE TABLE IF NOT EXISTS "+MENU_INFO_TABLE_NAME+" " +
-            "("+MENU_INFO_Column_1_veg+" VARCHAR, "
-            +MENU_INFO_Column_2_spec+" VARCHAR) ";
+    private static final String VEG_INFO_TABLE_NAME="Menu_Veg";
+    private static final String VEG_INFO_Column="Vegie";
+    private static final String CREATE_TABLE_VEG
+            ="CREATE TABLE IF NOT EXISTS "+VEG_INFO_TABLE_NAME+" " +
+            "("+VEG_INFO_Column+" VARCHAR) ";
+
+    private static final String SPE_INFO_TABLE_NAME="Menu_Special";
+    private static final String SPE_INFO_Column="Special";
+    private static final String CREATE_TABLE_SPE
+            ="CREATE TABLE IF NOT EXISTS "+SPE_INFO_TABLE_NAME+" " +
+            "("+SPE_INFO_Column+" VARCHAR) ";
 
 
+    /*private static final String COLLEGE_TABLE_NAME="CollegeList";
+    private static final String COLLEGE_TABLE_Column_1="Name";
+    private static final String CREATE_TABLE_COLLEGE
+            ="CREATE TABLE IF NOT EXISTS "+COLLEGE_TABLE_NAME+" " +
+            "("+COLLEGE_TABLE_NAME+" VARCHAR PRIMARY KEY) ";
+*/
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL(CREATE_TABLE_MENU);
+        database.execSQL(CREATE_TABLE_VEG);
+        database.execSQL(CREATE_TABLE_SPE);
         database.execSQL(CREATE_TABLE_MESS);
+        //database.execSQL(CREATE_TABLE_COLLEGE);
     }
 
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+MESS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+MENU_INFO_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+VEG_INFO_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+SPE_INFO_TABLE_NAME);
+
+        //db.execSQL("DROP TABLE IF EXISTS "+COLLEGE_TABLE_NAME);
         onCreate(db);
     }
 
@@ -68,20 +83,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     {
         SQLiteDatabase database = this.getWritableDatabase();
 
-        String insertsql2 = "INSERT INTO '"+MENU_INFO_TABLE_NAME+"' ('"+MENU_INFO_Column_1_veg+"') VALUES" +
+        String insertsql2 = "INSERT INTO '"+VEG_INFO_TABLE_NAME+"' ('"+VEG_INFO_Column+"') VALUES" +
                 "    ('Aaloo')," +
                 "    ('Paneer')," +
                 "    ('Chana Masala')," +
                 "    ('Cholle')," +
                 "    ('Matar')," +
-                "    ('Karela');";
+                "    ('Karela')";
 
-        String insertsql3 = "INSERT INTO '"+MENU_INFO_TABLE_NAME+"' ('"+MENU_INFO_Column_2_spec+"') VALUES" +
-                "    ('Gajar Halwa')," +
-                "    ('Kheer')," +
-                "    ('Ras Malai')," +
-                "    ('Boondi')," +
-                "    ('Jalebi');";
+        String insertsql3 = "INSERT INTO '"+SPE_INFO_TABLE_NAME+"' ('"+SPE_INFO_Column+"') VALUES" +
+                " ('Gajar Halwa')," +
+                " ('Badam Halwa')," +
+                " ('Moong Dal Halwa')," +
+                " ('Aamras')," +
+                " ('Dahi Puri')," +
+                " ('Buttermilk')," +
+                " ('Dahi Vada')," +
+                " ('Dhokla')," +
+                " ('Gulab Jamun')," +
+                " ('Kachori')," +
+                " ('Puran Poli')," +
+                " ('Rabri')," +
+                " ('Kheer')," +
+                " ('Ras Malai')," +
+                " ('Boondi Raita')," +
+                " ('Jalebi')";
 
         //database.insert(MENU_INFO_TABLE_NAME, null, values);
         database.execSQL(insertsql2);
@@ -92,9 +118,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public List<String> getAllVegies() {
-        List<String> contactList = new ArrayList<>();
-        String selectQuery = "SELECT "+MENU_INFO_Column_1_veg+" FROM " + MENU_INFO_TABLE_NAME;
+    public ArrayList<String> getAllVegies() {
+        ArrayList<String> contactList = new ArrayList<>();
+        contactList.clear();
+        String selectQuery = "SELECT "+VEG_INFO_Column+" FROM " + VEG_INFO_TABLE_NAME;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -104,23 +131,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 contactList.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
+        cursor.close();
 
         return contactList;
     }
 
     public List<String> getAllSpecials() {
         List<String> contactList = new ArrayList<>();
-        String selectQuery = "SELECT "+MENU_INFO_Column_2_spec+" FROM " + MENU_INFO_TABLE_NAME;
+        contactList.clear();
+        String selectQuery = "SELECT "+SPE_INFO_Column+" FROM " + SPE_INFO_TABLE_NAME;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
-
                 contactList.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
+
+        cursor.close();
         return contactList;
     }
 
@@ -242,12 +272,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
             JSONObject m1 = new JSONObject(cursor.getString(1));
+
+            //Log.e("json");
             menud = new Menu(
                     m1.getString("Rice"),
+                    m1.getString("Roti"),
                     m1.getString("VegieOne"),
                     m1.getString("VegieTwo"),
                     m1.getString("VegieThree"),
-                    m1.getString("Roti"),
                     m1.getString("Special"),
                     m1.getString("SpecialExtra"),
                     m1.getString("Other")
@@ -319,4 +351,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return status;
     }
+
+   /* public void setNBCollege(JSONObject jsonObject)
+    {
+
+    }
+    public ArrayList<String> getAllNBCollege()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<String> nbcoll = new ArrayList<>();
+        Cursor cursor = db.query(COLLEGE_TABLE_NAME, new String[] { COLLEGE_TABLE_Column_1}, null,
+                null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                nbcoll.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        return nbcoll;
+    }
+*/
 }

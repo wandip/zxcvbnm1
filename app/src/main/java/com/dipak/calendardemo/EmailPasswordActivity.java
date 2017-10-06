@@ -1,7 +1,10 @@
 package com.dipak.calendardemo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,11 +29,13 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
     private static final String TAG = "EmailPassword";
 
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
+    //private TextView mStatusTextView;
+    //private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
+    SharedPreferences prefs;
 
+    ProgressDialog pDialog;
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
@@ -40,18 +45,20 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_password);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
 
         // Views
-        mStatusTextView = (TextView)findViewById(R.id.status);
-        mDetailTextView = (TextView)findViewById(R.id.detail);
+        //mStatusTextView = (TextView)findViewById(R.id.status);
+        //mDetailTextView = (TextView)findViewById(R.id.detail);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText)findViewById(R.id.field_password);
 
         // Buttons
         findViewById(R.id.email_sign_in_button).setOnClickListener(this);
-        findViewById(R.id.email_create_account_button).setOnClickListener(this);
+        /*findViewById(R.id.email_create_account_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.verify_email_button).setOnClickListener(this);
+        findViewById(R.id.verify_email_button).setOnClickListener(this);*/
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
@@ -67,16 +74,19 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser!=null)
         {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("messid", currentUser.getUid());
+            editor.commit();
+
             Intent intent = new Intent(EmailPasswordActivity.this, MainActivity.class);
-            intent.putExtra("messid",currentUser.getUid());
             startActivity(intent);
 
         }
-        updateUI(currentUser);
+        //updateUI(currentUser);
     }
     // [END on_start_check_user]
 
-    private void createAccount(String email, String password) {
+   /* private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
         if (!validateForm()) {
             return;
@@ -108,15 +118,15 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                     }
                 });
         // [END create_user_with_email]
-    }
+    }*/
 
     private void signIn(String email, String password) {
-        Log.d(TAG, "signIn:" + email);
+        Log.d(TAG, "signIn email:" + email);
         if (!validateForm()) {
             return;
         }
 
-//        showProgressDialog();
+      showProgressDialog();
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
@@ -127,8 +137,10 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent = new Intent(EmailPasswordActivity.this, Verify.class);
-                            intent.putExtra("messid",user.getUid());
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("messid", user.getUid());
+                            editor.commit();
+                            Intent intent = new Intent(EmailPasswordActivity.this, ExtraDetails.class);
                             startActivity(intent);
                             //updateUI(user);
                         } else {
@@ -136,14 +148,16 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+                            //updateUI(null);
                         }
 
                         // [START_EXCLUDE]
                         if (!task.isSuccessful()) {
-                            mStatusTextView.setText(R.string.auth_failed);
+                            Toast.makeText(EmailPasswordActivity.this, "Authentication Failed",
+                                    Toast.LENGTH_SHORT).show();
+                            //mStatusTextView.setText(R.string.auth_failed);
                         }
-//                        hideProgressDialog();
+                        hideProgressDialog();
                         // [END_EXCLUDE]
                     }
                 });
@@ -152,10 +166,11 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
     private void signOut() {
         mAuth.signOut();
-        updateUI(null);
+        Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show();
+        //updateUI(null);
     }
 
-    private void sendEmailVerification() {
+    /*private void sendEmailVerification() {
         // Disable button
         findViewById(R.id.verify_email_button).setEnabled(false);
 
@@ -184,7 +199,7 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                     }
                 });
         // [END send_email_verification]
-    }
+    }*/
 
     private boolean validateForm() {
         boolean valid = true;
@@ -208,12 +223,13 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         return valid;
     }
 
-    private void updateUI(FirebaseUser user) {
+    /*private void updateUI(FirebaseUser user) {
 //        hideProgressDialog();
         if (user != null) {
-            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+           *//* mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
                     user.getEmail(), user.isEmailVerified()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+*//*
 
             findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
             findViewById(R.id.email_password_fields).setVisibility(View.GONE);
@@ -221,29 +237,43 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
             findViewById(R.id.verify_email_button).setEnabled(!user.isEmailVerified());
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
+            *//*mStatusTextView.setText(R.string.signed_out);
+            mDetailTextView.setText(null);*//*
 
             findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
             findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
             findViewById(R.id.signed_in_buttons).setVisibility(View.GONE);
         }
-    }
+    }*/
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.email_create_account_button) {
+        /*if (i == R.id.email_create_account_button) {
             Intent intent = new Intent(EmailPasswordActivity.this, Registration.class);
             startActivity(intent);
 
 //            createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.email_sign_in_button) {
+        } else */if (i == R.id.email_sign_in_button) {
             signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.sign_out_button) {
-            signOut();
+        } /*else if (i == R.id.sign_out_button) {
+           // signOut();
         } else if (i == R.id.verify_email_button) {
 //            sendEmailVerification();
-        }
+        }*/
+    }
+
+    public void showProgressDialog()
+    {
+        pDialog = new ProgressDialog(EmailPasswordActivity.this);
+        pDialog.setMessage("Signing In...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+    }
+
+    public void hideProgressDialog()
+    {
+        pDialog.dismiss();
     }
 }

@@ -45,6 +45,8 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMMM, yyyy");
+    int timecheck;
+    String timecheckaa;
 
 
     CompactCalendarView Calendar;
@@ -74,15 +76,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bundle bundle = getIntent().getExtras();
+       /* Bundle bundle = getIntent().getExtras();
         getmessid = bundle.getString("messid");
-
+*/
         context=this;
 
         //getmessid = "Mess5";
         dbh = new DatabaseHandler(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
+        messname = prefs.getString("messname", "null");
+        getmessid = prefs.getString("messid", "null");
+       /* nbcollege = prefs.getString("nbcollege", "null");
+        address = prefs.getString("address", "null");
+        contact = prefs.getString("contactnum", "null");
+        /*ownername = prefs.getString("ownername", "null");*/
 
         if(!prefs.getBoolean("firstTime", false)) {
             // run your one time code
@@ -94,7 +101,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(prefs.getString("messname","null").equals("null")){
+            Log.i("messn",messname);
             new GetMessName().execute("http://wanidipak56.000webhostapp.com/getMessname.php?messname="+getmessid);
+        }
+        else
+        {
+            Log.i("messn",messname);
+            setTitle(messname);
         }
 
         if(inetcheck()) {
@@ -224,6 +237,9 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("messname", messname);
+            Log.i("gotmessn",messname);
+
+            setTitle(messname);
             editor.commit();
         }
     }
@@ -374,10 +390,15 @@ public class MainActivity extends AppCompatActivity {
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
         Date newDate = null;
+        SimpleDateFormat sdfortime = new SimpleDateFormat("hhmm");
+        SimpleDateFormat sdfortimeaa = new SimpleDateFormat("aa");
+
         try {
             if(inetcheck())
             {
                 newDate = sdf.parse(server_response);
+                timecheck = Integer.parseInt(sdfortime.format(newDate));
+                timecheckaa = sdfortimeaa.format(newDate);
             }
             else
             {
@@ -386,6 +407,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Log.v("Setting Date", newDate.toString());
+            Log.v("Time", String.valueOf(timecheck));
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -397,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
         final Date maxDate = new Date(maxd);
 
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE : dd/MMM");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE-dd");
         String tod = simpleDateFormat.format(minDate);
         today.setText("Today : "+tod);
 
@@ -458,30 +481,51 @@ public class MainActivity extends AppCompatActivity {
 
                 if((dateClicked.after(minDate) || dateClicked.equals(minDate)) && (dateClicked.before(maxDate)|| dateClicked.equals(maxDate)))
                 {
-                    LunchButton.setClickable(true);
-                    DinnerButton.setClickable(true);
-
                     int daynum = dateClicked.getDay();
-                    if(status[daynum][0])
-                    {
-                        //Menu m = dbh.getMenu(dayforDBH,"Lunch");
-                        //lview.setText("Lunch Set : "+m.toString());
+
+                    if(!(timecheck>=300 && timecheckaa.equals("pm") && dateClicked.equals(minDate))) {
+                        LunchButton.setClickable(true);
+
+                        if (status[daynum][0]) {
+                            Menu m = dbh.getMenu(dayforDBH, "Lunch");
+                            lview.setText("Lunch Set : " + m.toString());
+                        } else
+                            lview.setText("Lunch Not Set");
+
+                        LunchButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
                     }
                     else
-                        lview.setText("Lunch Not Set");
-
-                    if(status[daynum][1])
                     {
-                        //Menu m = dbh.getMenu(dayforDBH,"Dinner");
-                        //dview.setText("Dinner Set : "+m.toString());
+                        LunchButton.setClickable(false);
+                        DinnerButton.setClickable(false);
+                        LunchButton.setBackground(getResources().getDrawable(R.drawable.button_grey));
+                        DinnerButton.setBackground(getResources().getDrawable(R.drawable.button_grey));
+
+                        lview.setText("Sorry not available");
+                        dview.setText("Sorry not available");
 
                     }
-                    else
-                        dview.setText("Dinner Not Set");
 
+                    if(!(timecheck>=1100 && timecheckaa.equals("pm") && dateClicked.equals(minDate))) {
+                        DinnerButton.setClickable(true);
+                        if (status[daynum][1]) {
+                            Menu m = dbh.getMenu(dayforDBH, "Dinner");
+                            dview.setText("Dinner Set : " + m.toString());
 
-                    LunchButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
-                    DinnerButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
+                        } else
+                            dview.setText("Dinner Not Set");
+                        DinnerButton.setBackground(getResources().getDrawable(R.drawable.lun_din_bg));
+                    }
+                    else {
+                        LunchButton.setClickable(false);
+                        DinnerButton.setClickable(false);
+                        LunchButton.setBackground(getResources().getDrawable(R.drawable.button_grey));
+                        DinnerButton.setBackground(getResources().getDrawable(R.drawable.button_grey));
+
+                        lview.setText("Sorry not available");
+                        dview.setText("Sorry not available");
+
+                    }
                 }
                 else
                 {

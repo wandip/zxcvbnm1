@@ -7,13 +7,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/muic"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".EmailPasswordActivity"
+            android:name=".Intro"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Upload"
+            android:name=".Registration"
             android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
@@ -33,7 +33,9 @@
         <activity
             android:name=".Offer"
             android:screenOrientation="portrait" />
-        <activity android:name=".Registration"></activity>
+        <activity android:name=".ExtraDetails" />
+        <activity android:name=".EmailPasswordActivity" />
+        <activity android:name=".Upload"></activity>
     </application>
 
 </manifest>

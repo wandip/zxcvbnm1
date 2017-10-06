@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,33 +30,43 @@ import java.net.URL;
 public class Verify extends AppCompatActivity {
 
     SharedPreferences prefs;
-    ProgressDialog mProgressDialog;
 private Context context;
-    String messid,ownername,nbcollege,contact,address,messname;
+    String messid,ownername,contact,address,messname;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify);
 
         context = this;
-        Bundle bundle = getIntent().getExtras();
-        messid = bundle.getString("messid");
+
+
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         messname = prefs.getString("messname", "null");
-        nbcollege = prefs.getString("nbcollege", "null");
+        messid = prefs.getString("messid", "null");
         address = prefs.getString("address", "null");
         contact = prefs.getString("contactnum", "null");
         ownername = prefs.getString("ownername", "null");
 
 
-        if(messname.equals("null"))
+        if(messname.equals("null") || messid.equals("null"))
         {
-            Toast.makeText(this, "Sorry, Some Error Occured", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Verification Failed", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Verify.this,Intro.class);
+            startActivity(intent);
+
+        }
+        else
+        {
+            setTitle(messname);
         }
 
-        final AddMess messedup = new AddMess();
+        ShimmerFrameLayout container =
+                (ShimmerFrameLayout) findViewById(R.id.shimmer_view_container);
+        container.startShimmerAnimation();
+
+        /*final AddMess messedup = new AddMess();
         messedup.execute();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable()
@@ -70,8 +82,21 @@ private Context context;
 
 
             }
-        }, Integer.parseInt(context.getString(R.string.timeout)));
+        }, Integer.parseInt(context.getString(R.string.timeout)));*/
 
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run() {
+
+                Intent intent = new Intent(Verify.this, MainActivity.class);
+                intent.putExtra("messid",messid);
+                startActivity(intent);
+
+            }
+        }, Integer.parseInt(context.getString(R.string.timeout)));
 
 
       /*  Button b = (Button) findViewById(R.id.verify_button);
@@ -88,17 +113,10 @@ private Context context;
 
     }
 
-    class AddMess extends AsyncTask<String , Void ,String> {
+   /* class AddMess extends AsyncTask<String , Void ,String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            mProgressDialog = new ProgressDialog(Verify.this);
-            mProgressDialog.setMessage("Verifying...");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
 
         }
         @Override
@@ -115,12 +133,12 @@ private Context context;
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("messid", messid);
                 jsonObject.put("name", messname);
-                /*jsonObject.put("gcharge", GuestCharge);
+                *//*jsonObject.put("gcharge", GuestCharge);
                 jsonObject.put("lopen", LunchOpen);
                 jsonObject.put("lclose", LunchClose);
                 jsonObject.put("dopen", DinnerOpen);
                 jsonObject.put("dclose", DinnerClose);
-                jsonObject.put("mcharge", MonthlyCharge);*/
+                jsonObject.put("mcharge", MonthlyCharge);*//*
                 jsonObject.put("contact", contact);
                 jsonObject.put("address", address);
                 jsonObject.put("nbcollege", nbcollege);
@@ -184,12 +202,11 @@ private Context context;
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            mProgressDialog.dismiss();
 
             Intent intent = new Intent(Verify.this, MainActivity.class);
             intent.putExtra("messid",messid);
             startActivity(intent);
         }
 
-    }
+    }*/
 }

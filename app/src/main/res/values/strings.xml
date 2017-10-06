@@ -81,4 +81,10 @@
     <string name="email_fmt">Email: %s</string>
 
     <string name="action_settings">Settings</string>
+
+    <string name="into_text">All of the Information goes here \n
+        Step 1. Give us details\n
+    Step 2. Upload Menu upto 7 days\n
+    Step 3. Can also upload Offers! (eg. Aamras on Saturday)\n
+    Step 4. Increase your customers manifold</string>
 </resources>

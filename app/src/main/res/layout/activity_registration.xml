@@ -102,22 +102,6 @@
                             android:inputType="textMultiLine" />
                     </com.github.florent37.materialtextfield.MaterialTextField>
 
-                    <com.github.florent37.materialtextfield.MaterialTextField
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:mtf_animationDuration="220"
-                        app:mtf_image="@drawable/school"
-
-                        app:mtf_labelColor="#fff">
-
-                        <EditText
-                            android:id="@+id/editText8"
-                            android:layout_width="369dp"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="Nearby College"
-                            android:inputType="textPersonName" />
-                    </com.github.florent37.materialtextfield.MaterialTextField>
 
                     <com.github.florent37.materialtextfield.MaterialTextField
                         android:layout_width="match_parent"
@@ -133,7 +117,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="Contact Number"
-                            android:inputType="none" />
+                            android:inputType="phone" />
                     </com.github.florent37.materialtextfield.MaterialTextField>
 
                 </LinearLayout>

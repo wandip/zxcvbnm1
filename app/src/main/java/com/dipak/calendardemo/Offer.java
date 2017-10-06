@@ -80,9 +80,11 @@ public class Offer extends AppCompatActivity {
                 }
                 else {
                     String myFormat = "dd MMMM yy"; //In which you need put here
-                    SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                    String myFormatforDB = "dd/MM/yy"; //In which you need put here
+
+                    SimpleDateFormat sdf = new SimpleDateFormat(myFormatforDB, Locale.US);
                     offerdate = sdf.format(myCalendar.getTime());
-                    edittext.setText(offerdate);
+                    edittext.setText(new SimpleDateFormat(myFormat,Locale.US).format(myCalendar.getTime()));
                 }
             }
 

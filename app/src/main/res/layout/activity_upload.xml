@@ -46,8 +46,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Roti/Chapati" />
+            android:checked="false"
+            android:text="Roti" />
 
         <RadioButton
             android:id="@+id/radio2"
@@ -78,15 +78,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <MultiAutoCompleteTextView
+        <AutoCompleteTextView
             android:id="@+id/vegie1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimaryDark"
             android:hint="Vegie1"
             android:inputType="textCapWords" />
 
-        <MultiAutoCompleteTextView
+        <AutoCompleteTextView
             android:id="@+id/vegie2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,7 +93,7 @@
             android:hint="Vegie2"
             android:inputType="textCapWords" />
 
-        <MultiAutoCompleteTextView
+        <AutoCompleteTextView
             android:id="@+id/vegie3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -174,7 +173,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <MultiAutoCompleteTextView
+        <AutoCompleteTextView
             android:id="@+id/special"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -182,7 +181,7 @@
             android:hint="Special"
             android:inputType="textCapWords" />
 
-        <MultiAutoCompleteTextView
+        <AutoCompleteTextView
             android:id="@+id/special2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

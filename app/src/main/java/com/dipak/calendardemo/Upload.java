@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -51,6 +52,7 @@ public class Upload extends AppCompatActivity {
     private RadioButton mFourRadioButton;
     private RadioButton mFiveRadioButton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,17 +65,101 @@ public class Upload extends AppCompatActivity {
         dayname = bundle.getString("day");
         getdate =bundle.getString("date");
 
+        setTitle(meal+", "+getdate+" : "+dayname);
+
+        databaseHandler = new DatabaseHandler(this);
+
+        Menu m = databaseHandler.getMenu(dayname.substring(0,3).toUpperCase(),meal);
+        Log.i("MenuUpload",m.toString());
+
+        if(m!=null)
+        {
+
+            temp = (EditText) findViewById(R.id.rice);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getRice());
+            }
+            Log.i("MenuUploadRice",m.getRice());
+
+            temp = (EditText) findViewById(R.id.roti);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getRoti());
+            }
+            Log.i("MenuUploadRoti",m.getRoti());
+            temp = (EditText) findViewById(R.id.vegie1);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getVeg1());
+            }
+            Log.i("MenuUploadVeg1",m.getVeg1());
+            temp = (EditText) findViewById(R.id.vegie2);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getVeg2());
+            }
+            Log.i("MenuUploadVeg2",m.getVeg2());
+            temp = (EditText) findViewById(R.id.vegie3);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getVeg3());
+            }
+            Log.i("MenuUploadVeg3",m.getVeg3());
+            temp = (EditText) findViewById(R.id.special);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getSpecial());
+            }
+            Log.i("MenuUploadSpe",m.getSpecial());
+            temp = (EditText) findViewById(R.id.special2);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getSpecial2());
+            }
+            Log.i("MenuUploadSpe2",m.getSpecial2());
+            temp = (EditText) findViewById(R.id.other);
+            if(!m.getRice().equals("null"))
+            {
+                temp.setText(m.getOther());
+            }
+            Log.i("MenuUploadOthe",m.getOther());
+
+        }
+
+        RadioGroup rg = (RadioGroup) findViewById(R.id.radio_group);
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
+
+                RadioButton b = (RadioButton) findViewById(checkedId);
+                temp = (EditText) findViewById(R.id.roti);
+                temp.setText(b.getText());
+            }
+        });
+
+
+
+
         mOneRadioButton = (RadioButton) findViewById(R.id.one_radio_btn);
         mTwoRadioButton = (RadioButton) findViewById(R.id.two_radio_btn);
         mThreeRadioButton = (RadioButton) findViewById(R.id.three_radio_btn);
         mFourRadioButton = (RadioButton) findViewById(R.id.four_radio_btn);
         mFiveRadioButton = (RadioButton) findViewById(R.id.two_radio_btn_1);
 
-        databaseHandler = new DatabaseHandler(this);
+        final AutoCompleteTextView vegie1 =(AutoCompleteTextView) findViewById(R.id.vegie1);
+        final AutoCompleteTextView vegie2 =(AutoCompleteTextView) findViewById(R.id.vegie2);
+        final AutoCompleteTextView vegie3 =(AutoCompleteTextView) findViewById(R.id.vegie3);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        final AutoCompleteTextView spec =(AutoCompleteTextView) findViewById(R.id.special);
+        final AutoCompleteTextView spec2 =(AutoCompleteTextView) findViewById(R.id.special2);
+
+
+       /* ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllVegies());
-        final MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) findViewById(R.id.vegie1);
+
 
         textView.setAdapter(adapter);
         textView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
@@ -81,6 +167,75 @@ public class Upload extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textView.showDropDown();
+            }
+        });*/
+
+
+
+        Log.e("InUpload",databaseHandler.getAllSpecials().toString());
+        Log.e("InUpload",databaseHandler.getAllSpecials().toString());
+
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllVegies());
+        vegie1.setAdapter(adapter);
+        vegie1.setThreshold(1);
+
+        vegie1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                vegie1.showDropDown();
+                return false;
+            }
+        });
+
+        vegie2.setAdapter(adapter);
+        vegie2.setThreshold(1);
+
+        vegie2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                vegie2.showDropDown();
+                return false;
+            }
+        });
+
+
+        vegie3.setAdapter(adapter);
+        vegie3.setThreshold(1);
+
+        vegie3.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                vegie3.showDropDown();
+                return false;
+            }
+        });
+
+
+
+        ArrayAdapter<String> adapter_spe = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllSpecials());
+        spec.setAdapter(adapter_spe);
+        spec.setThreshold(1);
+
+        spec.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                spec.showDropDown();
+                return false;
+            }
+        });
+
+        spec2.setAdapter(adapter_spe);
+        spec2.setThreshold(1);
+
+        spec2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                spec2.showDropDown();
+                return false;
             }
         });
 
@@ -149,46 +304,6 @@ public class Upload extends AppCompatActivity {
             }
         });
 
-        setTitle(meal+", "+getdate+" : "+dayname);
-
-        databaseHandler = new DatabaseHandler(this);
-
-        Menu m = databaseHandler.getMenu(dayname.substring(0,3).toUpperCase(),meal);
-
-        if(m!=null)
-        {
-            temp = (EditText) findViewById(R.id.rice);
-            temp.setText(m.getRice());
-            temp = (EditText) findViewById(R.id.roti);
-            temp.setText(m.getRoti());
-            temp = (EditText) findViewById(R.id.vegie1);
-            temp.setText(m.getVeg1());
-            temp = (EditText) findViewById(R.id.vegie2);
-            temp.setText(m.getVeg2());
-            temp = (EditText) findViewById(R.id.vegie3);
-            temp.setText(m.getVeg3());
-            temp = (EditText) findViewById(R.id.special);
-            temp.setText(m.getSpecial());
-            temp = (EditText) findViewById(R.id.special2);
-            temp.setText(m.getSpecial2());
-            temp = (EditText) findViewById(R.id.other);
-            temp.setText(m.getOther());
-        }
-
-        RadioGroup rg = (RadioGroup) findViewById(R.id.radio_group);
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
-
-                RadioButton b = (RadioButton) findViewById(checkedId);
-                temp = (EditText) findViewById(R.id.roti);
-                temp.setText(b.getText());
-            }
-        });
-
-
 
 
 
@@ -255,15 +370,6 @@ public class Upload extends AppCompatActivity {
                 alertDialog.show();
             }
         });
-    }
-
-    public void setRotiTxt(CharSequence rotiTxt) {
-
-
-       // EditText tempp=(EditText)findViewById(R.id.rice);
-        temp.setText(rotiTxt);
-
-
     }
 
 
