@@ -2,10 +2,10 @@ package com.dipak.calendardemo;
 
 import java.io.Serializable;
 
-public class Menu implements Serializable{
+public class MessMenu implements Serializable{
     private String rice,roti,veg1,veg2,veg3,special,special2,other;
 
-    public Menu(String rice, String roti, String veg1, String veg2, String veg3, String special, String special2, String other) {
+    public MessMenu(String rice, String roti, String veg1, String veg2, String veg3, String special, String special2, String other) {
 
         this.rice = rice;
         this.roti = roti;

@@ -31,7 +31,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String MESS_TABLE_NAME="MessInfo";
     private static final String MESS_TABLE_Column_ID="Day" ;
     private static final String MESS_TABLE_Column_1_week_details="Flag";
-    private static final String MESS_TABLE_Column_2_menu_details="Menu";
+    private static final String MESS_TABLE_Column_2_menu_details="MessMenu";
     private static final String CREATE_TABLE_MESS
             ="CREATE TABLE IF NOT EXISTS "+MESS_TABLE_NAME+
             " ("+MESS_TABLE_Column_ID+" VARCHAR PRIMARY KEY, "
@@ -92,22 +92,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "    ('Karela')";
 
         String insertsql3 = "INSERT INTO '"+SPE_INFO_TABLE_NAME+"' ('"+SPE_INFO_Column+"') VALUES" +
-                " ('Gajar Halwa')," +
-                " ('Badam Halwa')," +
-                " ('Moong Dal Halwa')," +
                 " ('Aamras')," +
-                " ('Dahi Puri')," +
+                " ('Badam Halwa')," +
+                " ('Bhel')," +
+                " ('Boondi Raita')," +
                 " ('Buttermilk')," +
+                " ('Dahi Puri')," +
                 " ('Dahi Vada')," +
                 " ('Dhokla')," +
+                " ('Fafda')," +
+                " ('Fruit Salad')," +
+                " ('Gajar Halwa')," +
+                " ('Ghevar')," +
                 " ('Gulab Jamun')," +
+                " ('Jalebi')," +
                 " ('Kachori')," +
+                " ('Kaju Katli')," +
+                " ('Kheer')," +
+                " ('Lassi')," +
+                " ('Ladoo')," +
+                " ('Modak')," +
+                " ('Mysore Pak')," +
+                " ('Moong Dal Halwa')," +
+                " ('Nariyal Laddu')," +
+                " ('Peda')," +
                 " ('Puran Poli')," +
                 " ('Rabri')," +
-                " ('Kheer')," +
-                " ('Ras Malai')," +
-                " ('Boondi Raita')," +
-                " ('Jalebi')";
+                " ('Shrikhand')," +
+                " ('Sooji Halwa')," +
+                " ('Sheer Khurma')," +
+                " ('Ras Malai')";
 
         //database.insert(MENU_INFO_TABLE_NAME, null, values);
         database.execSQL(insertsql2);
@@ -122,24 +136,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     {
         SQLiteDatabase database = this.getWritableDatabase();
 
-        String insertsql2 = "INSERT INTO '"+VEG_INFO_TABLE_NAME+"' ('"+VEG_INFO_Column+"') VALUES" +
-                "    ('"+vegie+"')";
+        ContentValues initialValues = new ContentValues();
 
+        initialValues.put(VEG_INFO_TABLE_NAME, vegie); // the execution is different if _id is 2
 
-        database.execSQL(insertsql2);
+        int id = (int) database.insertWithOnConflict(VEG_INFO_TABLE_NAME, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            database.update(VEG_INFO_TABLE_NAME, initialValues, null, null);  // number 1 is the _id here, update to variable for your code
+        }
 
         database.close();
-
     }
 
     public void addSpecial(String spec)
     {
         SQLiteDatabase database = this.getWritableDatabase();
 
-        String insertsql3 = "INSERT INTO '"+SPE_INFO_TABLE_NAME+"' ('"+SPE_INFO_Column+"') VALUES" +
-                " ('"+spec+"')";
+        ContentValues initialValues = new ContentValues();
 
-        database.execSQL(insertsql3);
+        initialValues.put(SPE_INFO_TABLE_NAME, spec); // the execution is different if _id is 2
+
+        int id = (int) database.insertWithOnConflict(SPE_INFO_TABLE_NAME, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            database.update(SPE_INFO_TABLE_NAME, initialValues, null, null);  // number 1 is the _id here, update to variable for your code
+        }
 
         database.close();
 
@@ -286,9 +306,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    public Menu getMenu(String day, String meal)
+    public MessMenu getMenu(String day, String meal)
     {
-        Menu menud = null;
+        MessMenu menud = null;
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -302,7 +322,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             JSONObject m1 = new JSONObject(cursor.getString(1));
 
             //Log.e("json");
-            menud = new Menu(
+            menud = new MessMenu(
                     m1.getString("Rice"),
                     m1.getString("Roti"),
                     m1.getString("VegieOne"),

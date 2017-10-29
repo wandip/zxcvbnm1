@@ -4,11 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -18,6 +18,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,7 +46,6 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -369,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         //getWeekMenu.cancel(true);
 
-                        Toast.makeText(MainActivity.this, "Could not load Menu", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Could not load MessMenu", Toast.LENGTH_SHORT).show();
                     }
 
 
@@ -499,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
                         LunchButton.setClickable(true);
 
                         if (status[daynum][0]) {
-                            Menu m = dbh.getMenu(dayforDBH, "Lunch");
+                            MessMenu m = dbh.getMenu(dayforDBH, "Lunch");
 
                             String boldText = "Lunch Set : ";
                             String normalText = m.toString();
@@ -528,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                     if(!(timecheck>=1100 && timecheckaa.equals("pm") && dateClicked.equals(minDate))) {
                         DinnerButton.setClickable(true);
                         if (status[daynum][1]) {
-                            Menu m = dbh.getMenu(dayforDBH, "Dinner");
+                            MessMenu m = dbh.getMenu(dayforDBH, "Dinner");
                             String boldText = "Dinner Set : ";
                             String normalText = m.toString();
                             SpannableString str = new SpannableString(boldText + normalText);
@@ -726,8 +728,38 @@ public class MainActivity extends AppCompatActivity {
 
         return connected;
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                String posted_by_1 = "+917387636474";
 
+                String uri_1 = "tel:" + posted_by_1.trim() ;
+                Intent intent_1 = new Intent(Intent.ACTION_DIAL);
+                intent_1.setData(Uri.parse(uri_1));
+                startActivity(intent_1);
+                break;
+            case R.id.action_settings_2:
+                String posted_by = "+917387636474";
 
+                String uri = "tel:" + posted_by.trim() ;
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse(uri));
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main2, menu);
+        return true;
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();

@@ -8,20 +8,14 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -35,8 +29,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Upload extends AppCompatActivity {
 
@@ -69,7 +61,7 @@ public class Upload extends AppCompatActivity {
 
         databaseHandler = new DatabaseHandler(this);
 
-        Menu m = databaseHandler.getMenu(dayname.substring(0,3).toUpperCase(),meal);
+        MessMenu m = databaseHandler.getMenu(dayname.substring(0,3).toUpperCase(),meal);
         Log.i("MenuUpload",m.toString());
 
         if(m!=null)
@@ -157,21 +149,6 @@ public class Upload extends AppCompatActivity {
         final AutoCompleteTextView spec2 =(AutoCompleteTextView) findViewById(R.id.special2);
 
 
-       /* ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllVegies());
-
-
-        textView.setAdapter(adapter);
-        textView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                textView.showDropDown();
-            }
-        });*/
-
-
-
         Log.e("InUpload",databaseHandler.getAllSpecials().toString());
         Log.e("InUpload",databaseHandler.getAllSpecials().toString());
 
@@ -219,7 +196,7 @@ public class Upload extends AppCompatActivity {
                 android.R.layout.simple_dropdown_item_1line, databaseHandler.getAllSpecials());
         spec.setAdapter(adapter_spe);
         spec.setThreshold(1);
-        spec.setDropDownHeight(20);
+        spec.setDropDownHeight(250);
         spec.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -305,25 +282,6 @@ public class Upload extends AppCompatActivity {
         });
 
 
-
-
-
-        //RadioGroup riceradio = (RadioGroup) findViewById(R.id.radGroup1);
-
-
-/*        riceradio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
-
-                RadioButton b = (RadioButton) findViewById(checkedId);
-                temp = (EditText) findViewById(R.id.rice);
-                temp.setText(b.getText());
-            }
-        });
-*/
-
         Button b1 = (Button) findViewById(R.id.uploadbtn);
 
         b1.setOnClickListener(new View.OnClickListener() {
@@ -363,7 +321,7 @@ public class Upload extends AppCompatActivity {
 
 
                 AlertDialog.Builder a_b = new AlertDialog.Builder(Upload.this);
-                a_b.setMessage("Upload Menu ?")
+                a_b.setMessage("Upload MessMenu ?")
                         .setCancelable(false)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
@@ -492,17 +450,3 @@ public class Upload extends AppCompatActivity {
 
     }
 }
-
-
-/*switch(checkedId)
-                {
-                    case R.id.radio1:
-                        RadioButton b = (RadioButton) findViewById(checkedId);
-                        break;
-                    case R.id.radio2:
-                        // TODO Something
-                        break;
-                    case R.id.radio3:
-                        // TODO Something
-                        break;
-                }*/

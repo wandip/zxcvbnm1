@@ -11,32 +11,24 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.CollapsibleActionView;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class Registration extends AppCompatActivity {
 
@@ -188,7 +180,7 @@ public class Registration extends AppCompatActivity {
         return isvalid;
     }
 
-    class AddMess extends AsyncTask<String , Void ,String> {
+    private class AddMess extends AsyncTask<String , Void ,String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -248,11 +240,9 @@ public class Registration extends AppCompatActivity {
                 Log.d("Dipak :",is.toString());
 
 
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }  finally {
+            } finally {
                 //clean up
                 try {
                     if(os==null || is == null)

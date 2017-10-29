@@ -33,8 +33,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import static com.dipak.calendardemo.R.drawable.calendar;
-
 public class ExtraDetails extends AppCompatActivity {
 
     private AutoCompleteTextView nbCollege;
